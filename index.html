@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUINIELAS 351</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #006847 0%, #ffffff 50%, #CE1126 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            max-width: 550px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 4px solid #006847;
+        }
+        .header {
+            background: #006847;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 4px solid #CE1126;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        .header .precio {
+            background: #CE1126;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        .content {
+            padding: 16px;
+        }
+        .campo-nombre {
+            margin-bottom: 16px;
+        }
+        .campo-nombre label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #006847;
+        }
+        .campo-nombre input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #006847;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .partido {
+            background: #f8f8f8;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        .partido-num {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .equipos {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .equipo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+        .equipo.visitante {
+            justify-content: flex-end;
+        }
+        .nombre-equipo {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .escudo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: white;
+            padding: 2px;
+            flex-shrink: 0;
+            border: 1px solid #ddd;
+        }
+        .escudo-fallback {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .vs {
+            color: #CE1126;
+            font-size: 12px;
+            margin: 0 8px;
+            flex-shrink: 0;
+        }
+        .opciones {
+            display: flex;
+            gap: 6px;
+            justify-content: space-between;
+        }
+        .opcion {
+            flex: 1;
+            text-align: center;
+        }
+        .opcion input {
+            display: none;
+        }
+        .opcion label {
+            display: block;
+            padding: 8px 2px;
+            background: white;
+            border: 2px solid #006847;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .opcion input:checked + label {
+            background: #006847;
+            color: white;
+            border-color: #006847;
+        }
+        .botones {
+            display: grid;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-acumular {
+            background: #006847;
+            color: white;
+        }
+        .btn-acumular:hover {
+            background: #005236;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        .btn-whatsapp:hover {
+            background: #1ebe5a;
+        }
+        .btn-limpiar {
+            background: #CE1126;
+            color: white;
+        }
+        .btn-limpiar:hover {
+            background: #b30f22;
+        }
+        .acumuladas {
+            background: #fff9e6;
+            border: 2px dashed #CE1126;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        .acumuladas-titulo {
+            font-weight: bold;
+            color: #006847;
+            margin-bottom: 6px;
+        }
+        .acumuladas-contador {
+            font-size: 24px;
+            color: #CE1126;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 QUINIELAS 351</h1>
+            <div class="precio">💲Precio $20 c/u</div>
+        </div>
+        
+        <div class="content">
+            <div class="campo-nombre">
+                <label for="nombre">👤 Nombre:</label>
+                <input type="text" id="nombre" placeholder="Escribe tu nombre aquí">
+            </div>
+
+            <form id="quinielaForm">
+                <div class="partido">
+                    <div class="partido-num">Partido 1</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/necaxa.png" alt="NEC" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#CE1126;">NEC</div>
+                            <span class="nombre-equipo">NECAXA</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">ATLANTE</span>
+                            <img src="https://escudosfc.com.br/images/atlante.png" alt="ATL" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#006847;">ATL</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p1" id="p1-l" value="Local">
+                            <label for="p1-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p1" id="p1-e" value="Empate">
+                            <label for="p1-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p1" id="p1-v" value="Visitante">
+                            <label for="p1-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 2</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/tihuana_mex.png" alt="TIJ" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#000;">TIJ</div>
+                            <span class="nombre-equipo">TIJUANA</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">TIGRES</span>
+                            <img src="https://escudosfc.com.br/images/tigres.jpg" alt="TIG" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#FFD100;color:#000;">TIG</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p2" id="p2-l" value="Local">
+                            <label for="p2-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p2" id="p2-e" value="Empate">
+                            <label for="p2-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p2" id="p2-v" value="Visitante">
+                            <label for="p2-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 3</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/leon_mex.png" alt="LEO" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#008000;">LEO</div>
+                            <span class="nombre-equipo">LEON</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">ATLAS</span>
+                            <img src="https://escudosfc.com.br/images/atlas.png" alt="ATS" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#CE1126;">ATS</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p3" id="p3-l" value="Local">
+                            <label for="p3-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p3" id="p3-e" value="Empate">
+                            <label for="p3-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p3" id="p3-v" value="Visitante">
+                            <label for="p3-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 4</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/san_luis_mex.png" alt="ASL" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#0066CC;">ASL</div>
+                            <span class="nombre-equipo">SAN LUIS</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">CRUZ AZUL</span>
+                            <img src="https://escudosfc.com.br/images/cruzazul.png" alt="CAZ" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#0066CC;">CAZ</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p4" id="p4-l" value="Local">
+                            <label for="p4-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p4" id="p4-e" value="Empate">
+                            <label for="p4-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p4" id="p4-v" value="Visitante">
+                            <label for="p4-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 5</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/juarez.png" alt="FCJ" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#CE1126;">FCJ</div>
+                            <span class="nombre-equipo">BRAVOS</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">PUEBLA</span>
+                            <img src="https://escudosfc.com.br/images/puebla_mex.png" alt="PUE" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#0066CC;">PUE</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p5" id="p5-l" value="Local">
+                            <label for="p5-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p5" id="p5-e" value="Empate">
+                            <label for="p5-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p5" id="p5-v" value="Visitante">
+                            <label for="p5-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 6</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/univ_guad_mex.png" alt="PUM" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#003366;">PUM</div>
+                            <span class="nombre-equipo">PUMAS</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">PACHUCA</span>
+                            <img src="https://escudosfc.com.br/images/pachuca.png" alt="PAC" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#0066CC;">PAC</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p6" id="p6-l" value="Local">
+                            <label for="p6-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p6" id="p6-e" value="Empate">
+                            <label for="p6-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p6" id="p6-v" value="Visitante">
+                            <label for="p6-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 7</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/monterrey.png" alt="MTY" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#0066CC;">MTY</div>
+                            <span class="nombre-equipo">MONTERREY</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">SANTOS</span>
+                            <img src="https://escudosfc.com.br/images/santoslaguna2_mex.png" alt="SAN" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#008000;">SAN</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p7" id="p7-l" value="Local">
+                            <label for="p7-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p7" id="p7-e" value="Empate">
+                            <label for="p7-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p7" id="p7-v" value="Visitante">
+                            <label for="p7-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 8</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/chivas_mex.png" alt="GDL" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#CE1126;">GDL</div>
+                            <span class="nombre-equipo">CHIVAS</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">TOLUCA</span>
+                            <img src="https://escudosfc.com.br/images/toluca.jpg" alt="TOL" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#CE1126;">TOL</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p8" id="p8-l" value="Local">
+                            <label for="p8-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p8" id="p8-e" value="Empate">
+                            <label for="p8-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p8" id="p8-v" value="Visitante">
+                            <label for="p8-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="partido">
+                    <div class="partido-num">Partido 9</div>
+                    <div class="equipos">
+                        <div class="equipo">
+                            <img src="https://escudosfc.com.br/images/gallosblancos.png" alt="QRO" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#000;">QRO</div>
+                            <span class="nombre-equipo">QUERETARO</span>
+                        </div>
+                        <span class="vs">vs</span>
+                        <div class="equipo visitante">
+                            <span class="nombre-equipo">AMÉRICA</span>
+                            <img src="https://escudosfc.com.br/images/amex.png" alt="AME" class="escudo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="escudo-fallback" style="background:#FFD100;color:#000;">AME</div>
+                        </div>
+                    </div>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" name="p9" id="p9-l" value="Local">
+                            <label for="p9-l">Local</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p9" id="p9-e" value="Empate">
+                            <label for="p9-e">Empate</label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" name="p9" id="p9-v" value="Visitante">
+                            <label for="p9-v">Visitante</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acumuladas" id="acumuladasBox" style="display:none;">
+                    <div class="acumuladas-titulo">📋 Quinielas Acumuladas</div>
+                    <div class="acumuladas-contador" id="contador">0</div>
+                    <div style="font-size:12px;color:#666;">Total: $<span id="total">0</span></div>
+                </div>
+
+                <div class="botones">
+                    <button type="button" class="btn btn-acumular" onclick="acumularQuiniela()">➕ Acumular Quiniela</button>
+                    <button type="button" class="btn btn-whatsapp" onclick="enviarWhatsApp()">📱 Enviar por WhatsApp</button>
+                    <button type="button" class="btn btn-limpiar" onclick="limpiarTodo()">🗑️ Limpiar Todo</button>
+                </div>
+            </form>
+            
+            <div class="footer">
+                Jornada 1 - Quiniela $20 c/u
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const partidos = [
+            'NECAXA vs ATLANTE',
+            'TIJUANA vs TIGRES', 
+            'LEON vs ATLAS',
+            'SAN LUIS vs CRUZ AZUL',
+            'BRAVOS vs PUEBLA',
+            'PUMAS vs PACHUCA',
+            'MONTERREY vs SANTOS',
+            'CHIVAS vs TOLUCA',
+            'QUERETARO vs AMÉRICA'
+        ];
+
+        let quinielasAcumuladas = [];
+
+        function obtenerQuinielaActual() {
+            const nombre = document.getElementById('nombre').value.trim();
+            if (!nombre) {
+                alert('Por favor escribe tu nombre');
+                return null;
+            }
+
+            let picks = [];
+            let incompletos = 0;
+            
+            for (let i = 1; i <= 9; i++) {
+                const seleccion = document.querySelector(`input[name="p${i}"]:checked`);
+                const resultado = seleccion ? seleccion.value : 'Sin elegir';
+                if (!seleccion) incompletos++;
+                picks.push(resultado);
+            }
+
+            if (incompletos > 0) {
+                if (!confirm(`Te faltan ${incompletos} partidos por elegir. ¿Acumular así?`)) {
+                    return null;
+                }
+            }
+
+            return { nombre, picks };
+        }
+
+        function acumularQuiniela() {
+            const quiniela = obtenerQuinielaActual();
+            if (!quiniela) return;
+
+            quinielasAcumuladas.push(quiniela);
+            actualizarContador();
+            document.getElementById('quinielaForm').reset();
+            
+            alert(`Quiniela agregada ✅\nTotal acumuladas: ${quinielasAcumuladas.length}`);
+        }
+
+        function actualizarContador() {
+            const count = quinielasAcumuladas.length;
+            document.getElementById('contador').textContent = count;
+            document.getElementById('total').textContent = count * 20;
+            document.getElementById('acumuladasBox').style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function enviarWhatsApp() {
+            if (quinielasAcumuladas.length === 0) {
+                const actual = obtenerQuinielaActual();
+                if (!actual) return;
+                quinielasAcumuladas.push(actual);
+            }
+
+            let mensaje = `🏆 *QUINIELAS 351* 🏆\n`;
+            mensaje += `💲Precio: $20 c/u\n`;
+            mensaje += `📋 Total de quinielas: ${quinielasAcumuladas.length}\n`;
+            mensaje += `💰 Total a pagar: $${quinielasAcumuladas.length * 20}\n\n`;
+
+            quinielasAcumuladas.forEach((q, idx) => {
+                mensaje += `*Quiniela ${idx + 1} - ${q.nombre}*\n`;
+                q.picks.forEach((pick, i) => {
+                    mensaje += `${i+1}. ${partidos[i]} → *${pick}*\n`;
+                });
+                mensaje += `\n`;
+            });
+
+            // Tu número con lada de México +52
+            const numeroWhatsApp = "523513743191";
+            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function limpiarTodo() {
+            if (quinielasAcumuladas.length > 0) {
+                if (!confirm('¿Borrar todas las quinielas acumuladas?')) return;
+            }
+            document.getElementById('quinielaForm').reset();
+            document.getElementById('nombre').value = '';
+            quinielasAcumuladas = [];
+            actualizarContador();
+        }
+    </script>
+</body>
+</html>
